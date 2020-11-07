@@ -32,11 +32,16 @@ public class AllocateOrderAction implements Action<BeerOrderStatusEnum, BeerOrde
         String beerOrderId = (String) context.getMessage().getHeaders().get(BeerOrderManagerImpl.ORDER_ID_HEADER);
         Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(UUID.fromString(beerOrderId));
 
+        log.debug("Beer order id is: " + beerOrderId);
+
+        log.debug("Is optional present? " + beerOrderOptional.isPresent());
+
         beerOrderOptional.ifPresentOrElse(beerOrder -> {
-            jmsTemplate.convertAndSend(JmsConfig.ALLOCATE_ORDER_QUEUE,
-                    AllocateOrderRequest.builder()
-                            .beerOrder(beerOrderMapper.beerOrderToDto(beerOrder))
-                            .build());
+            AllocateOrderRequest req = AllocateOrderRequest.builder()
+                    .beerOrder(beerOrderMapper.beerOrderToDto(beerOrder))
+                    .build();
+            jmsTemplate.convertAndSend(JmsConfig.ALLOCATE_ORDER_QUEUE, req);
+            log.debug("AllocateOrderRequest BeerOrderDto id is: " + req.getBeerOrder().getId());
             log.debug("Sent allocation request for order id: " + beerOrderId);
         }, () -> log.error("Beer order not found"));
 
