@@ -128,6 +128,8 @@ public class BeerOrderManagerImplIT {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
             assertEquals(BeerOrderStatusEnum.VALIDATION_EXCEPTION, foundOrder.getOrderStatus());
         });
+
+        //TODO passes once clean/compile Maven but then during processValidationResult the optional is null
     }
 
     @Test
