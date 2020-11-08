@@ -23,10 +23,10 @@ public class BeerOrderValidationListener {
 
         ValidateOrderRequest request = (ValidateOrderRequest) msg.getPayload();
 
-        if (request.getBeerOrder().getCustomerRef() != null) {
-            if (("fail-validation").equals(request.getBeerOrder().getCustomerRef())) { //condition to fail validation
+        if (request.getBeerOrderDto().getCustomerRef() != null) {
+            if (("fail-validation").equals(request.getBeerOrderDto().getCustomerRef())) { //condition to fail validation
                 isValid = false;
-            } else if (("cancel-from-validation-pending").equals(request.getBeerOrder().getCustomerRef())) { //don't send message if cancelled
+            } else if (("cancel-from-validation-pending").equals(request.getBeerOrderDto().getCustomerRef())) { //don't send message if cancelled
                 return;
             }
         }
@@ -36,7 +36,7 @@ public class BeerOrderValidationListener {
         jmsTemplate.convertAndSend(JmsConfig.VALIDATE_ORDER_RESPONSE_QUEUE,
                 ValidateOrderResult.builder()
                         .isValid(isValid)
-                        .orderId(request.getBeerOrder().getId())
+                        .orderId(request.getBeerOrderDto().getId())
                         .build());
     }
 }

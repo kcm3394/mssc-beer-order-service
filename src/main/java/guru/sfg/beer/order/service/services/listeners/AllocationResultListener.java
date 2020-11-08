@@ -27,7 +27,6 @@ public class AllocationResultListener {
         } else if (result.getAllocationError()){
             //allocation error
             beerOrderManager.beerOrderAllocationFailed(result.getBeerOrderDto());
-
         }
     }
 }

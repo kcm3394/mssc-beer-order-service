@@ -38,13 +38,11 @@ public class AllocateOrderAction implements Action<BeerOrderStatusEnum, BeerOrde
 
         beerOrderOptional.ifPresentOrElse(beerOrder -> {
             AllocateOrderRequest req = AllocateOrderRequest.builder()
-                    .beerOrder(beerOrderMapper.beerOrderToDto(beerOrder))
+                    .beerOrderDto(beerOrderMapper.beerOrderToDto(beerOrder))
                     .build();
             jmsTemplate.convertAndSend(JmsConfig.ALLOCATE_ORDER_QUEUE, req);
-            log.debug("AllocateOrderRequest BeerOrderDto id is: " + req.getBeerOrder().getId());
+            log.debug("AllocateOrderRequest BeerOrderDto id is: " + req.getBeerOrderDto().getId());
             log.debug("Sent allocation request for order id: " + beerOrderId);
         }, () -> log.error("Beer order not found"));
-
-
     }
 }

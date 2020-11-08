@@ -24,18 +24,18 @@ public class BeerOrderAllocationListener {
 
         AllocateOrderRequest request = (AllocateOrderRequest) msg.getPayload();
 
-        if (request.getBeerOrder().getCustomerRef() != null) {
-            if (("fail-allocation").equals(request.getBeerOrder().getCustomerRef())) { //condition to fail allocation
+        if (request.getBeerOrderDto().getCustomerRef() != null) {
+            if (("fail-allocation").equals(request.getBeerOrderDto().getCustomerRef())) { //condition to fail allocation
                 isError = true;
-            } else if (("partial-allocation").equals(request.getBeerOrder().getCustomerRef())) { //condition for partial allocation
+            } else if (("partial-allocation").equals(request.getBeerOrderDto().getCustomerRef())) { //condition for partial allocation
                 isPartial = true;
-            } else if (("cancel-from-allocation-pending").equals(request.getBeerOrder().getCustomerRef())) { //don't send message if cancelled
+            } else if (("cancel-from-allocation-pending").equals(request.getBeerOrderDto().getCustomerRef())) { //don't send message if cancelled
                 return;
             }
         }
 
         boolean finalIsPartial = isPartial;
-        request.getBeerOrder().getBeerOrderLines().forEach(beerOrderLineDto -> {
+        request.getBeerOrderDto().getBeerOrderLines().forEach(beerOrderLineDto -> {
             if (finalIsPartial) {
                 beerOrderLineDto.setQuantityAllocated(beerOrderLineDto.getOrderQuantity() - 1);
             } else {
@@ -47,7 +47,7 @@ public class BeerOrderAllocationListener {
 
         jmsTemplate.convertAndSend(JmsConfig.ALLOCATE_ORDER_RESPONSE_QUEUE,
                 AllocateOrderResult.builder()
-                        .beerOrderDto(request.getBeerOrder())
+                        .beerOrderDto(request.getBeerOrderDto())
                         .allocationError(isError)
                         .pendingInventory(isPartial)
                         .build());

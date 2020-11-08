@@ -91,7 +91,6 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
             awaitForStatus(beerOrder.getId(), BeerOrderStatusEnum.PENDING_INVENTORY);
             updateAllocatedQty(beerOrderDto);
         }, () -> log.error("beerOrderAllocationPendingInventory - Order Id not found: " + beerOrderDto.getId()));
-
     }
 
     @Override

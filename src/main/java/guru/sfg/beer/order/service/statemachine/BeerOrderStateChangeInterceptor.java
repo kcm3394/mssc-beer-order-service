@@ -36,9 +36,12 @@ public class BeerOrderStateChangeInterceptor extends StateMachineInterceptorAdap
                 .ifPresent(orderId -> {
                     log.debug("Saving state for order id: " + orderId + " Status: " + state.getId());
 
-                    BeerOrder beerOrder = beerOrderRepository.getOne(UUID.fromString(orderId));
-                    beerOrder.setOrderStatus(state.getId());
-                    beerOrderRepository.saveAndFlush(beerOrder); //force to be sent to database, not Hibernate's usual lazy write
+//                    BeerOrder beerOrder = beerOrderRepository.getOne(UUID.fromString(orderId));
+                    Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(UUID.fromString(orderId));
+                    beerOrderOptional.ifPresentOrElse(beerOrder -> {
+                        beerOrder.setOrderStatus(state.getId());
+                        beerOrderRepository.saveAndFlush(beerOrder); //force to be sent to database, not Hibernate's usual lazy write
+                    }, () -> log.error("Beer order not found"));
         });
     }
 }
